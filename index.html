@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicky & Partner - Share Our Moments</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#F8F3EB',
+                        champagne: '#E8D8C4',
+                        mochaLight: '#B89B85',
+                        mocha: '#8B6F5C',
+                        espresso: '#4B382F',
+                        gold: '#C6A15B',
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8F3EB;
+            color: #4B382F;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .serif-heading {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 30px -5px rgba(139, 111, 92, 0.08), 0 4px 12px -2px rgba(139, 111, 92, 0.04);
+        }
+        .drag-active {
+            border-color: #C6A15B !important;
+            background-color: #E8D8C4 !important;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F8F3EB;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #B89B85;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center px-4 py-8 max-w-md mx-auto sm:max-w-xl">
+
+    <!-- Header / Branding -->
+    <header class="w-full text-center space-y-3 pt-4 pb-2">
+        <div class="inline-flex items-center justify-center space-x-2 mb-1">
+            <span class="h-[1px] w-8 bg-gold opacity-60"></span>
+            <span class="text-gold text-xs tracking-widest uppercase font-medium">Engagement Moments</span>
+            <span class="h-[1px] w-8 bg-gold opacity-60"></span>
+        </div>
+        <h1 class="serif-heading text-4xl sm:text-5xl font-semibold text-espresso tracking-tight">
+            Nicky &amp; <span class="italic font-normal text-mocha">Melbie</span>
+        </h1>
+        <p class="text-lg text-mocha font-medium tracking-wide">
+            Share Our Moments 🤎
+        </p>
+        <div class="w-12 h-[2px] bg-champagne mx-auto my-2 rounded-full"></div>
+        <p class="text-sm text-espresso/80 max-w-xs mx-auto leading-relaxed px-2 font-normal">
+            Captured a beautiful moment? We'd love to see it through your eyes. Upload your photos and videos from our special day.
+        </p>
+    </header>
+
+    <!-- Main Container Card -->
+    <main class="w-full my-auto py-4">
+        <div class="bg-white/80 backdrop-blur-sm border border-champagne/60 rounded-3xl p-6 card-shadow text-center transition-all">
+            
+            <!-- Hidden File Input -->
+            <input type="file" id="fileInput" multiple accept="image/*,video/*" class="hidden">
+
+            <!-- STATE 1: INITIAL UPLOAD BUTTON & DROP ZONE -->
+            <div id="uploadInitialState" class="space-y-6">
+                <div id="dropZone" class="border-2 border-dashed border-mochaLight/40 hover:border-mocha rounded-2xl p-8 bg-cream/40 transition-all cursor-pointer flex flex-col items-center justify-center space-y-3 group">
+                    <div class="w-16 h-16 rounded-full bg-champagne/40 flex items-center justify-center text-mocha group-hover:scale-105 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-mocha font-medium">Tap to select or drag & drop</p>
+                        <p class="text-[11px] text-mochaLight mt-1">Supports photos &amp; videos</p>
+                    </div>
+                </div>
+
+                <button id="triggerFileSelect" class="w-full py-4 px-6 bg-mocha text-cream hover:bg-espresso rounded-2xl font-medium shadow-md hover:shadow-lg transition-all transform active:scale-[0.99] flex items-center justify-center space-x-2 text-base">
+                    <span>📸</span>
+                    <span>Upload Your Moments</span>
+                </button>
+            </div>
+
+            <!-- STATE 2: PREVIEW & CONFIRMATION -->
+            <div id="previewState" class="hidden space-y-5">
+                <div class="flex justify-between items-center text-xs text-mocha border-b border-champagne/40 pb-2">
+                    <span id="fileCountText" class="font-semibold">0 files selected</span>
+                    <button id="addMoreBtn" class="text-gold font-medium hover:underline flex items-center space-x-1">
+                        <span>+ Add More</span>
+                    </button>
+                </div>
+
+                <!-- Horizontal Preview Carousel Grid -->
+                <div id="previewContainer" class="grid grid-cols-3 gap-2.5 max-h-64 overflow-y-auto p-1 custom-scrollbar">
+                    <!-- Dynamic Preview Cards Inserted Here -->
+                </div>
+
+                <div class="pt-2 space-y-2">
+                    <button id="startUploadBtn" class="w-full py-3.5 px-6 bg-mocha text-cream hover:bg-espresso rounded-2xl font-medium shadow-md transition-all flex items-center justify-center space-x-2">
+                        <span>Upload Selected Files</span>
+                    </button>
+                    <button id="cancelSelectionBtn" class="w-full py-2 text-xs text-mochaLight hover:text-espresso font-medium transition-colors">
+                        Clear selection
+                    </button>
+                </div>
+            </div>
+
+            <!-- STATE 3: UPLOADING PROGRESS -->
+            <div id="uploadingState" class="hidden py-6 space-y-5">
+                <div class="w-16 h-16 rounded-full bg-champagne/40 text-mocha flex items-center justify-center mx-auto animate-pulse">
+                    <svg class="animate-spin h-8 w-8 text-mocha" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+
+                <div class="space-y-2">
+                    <p class="text-sm font-semibold text-espresso" id="uploadStatusText">Sending to Google Drive...</p>
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-cream rounded-full h-2.5 border border-champagne overflow-hidden">
+                        <div id="progressBar" class="bg-mocha h-2.5 rounded-full transition-all duration-300 w-0"></div>
+                    </div>
+                    <p class="text-xs text-mocha font-semibold" id="progressPercentage">0%</p>
+                </div>
+            </div>
+
+            <!-- STATE 4: SUCCESS -->
+            <div id="successState" class="hidden py-6 space-y-5">
+                <div class="w-16 h-16 rounded-full bg-green-100 text-green-700 flex items-center justify-center mx-auto shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+
+                <div class="space-y-1">
+                    <h3 class="serif-heading text-2xl font-semibold text-espresso">Thank You 🤎</h3>
+                    <p class="text-sm text-mocha">Your moments have been added to our Google Drive memories.</p>
+                </div>
+
+                <div class="pt-3">
+                    <button id="uploadMoreBtn" class="w-full py-3 px-6 bg-cream border border-mochaLight text-espresso hover:bg-champagne/40 rounded-2xl font-medium transition-all text-sm">
+                        Upload More Photos
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- LIVE SHARED GALLERY SECTION -->
+    <section class="w-full mb-6">
+        <div class="bg-white/60 backdrop-blur-sm border border-champagne/60 rounded-3xl p-5 card-shadow space-y-4">
+            <div class="flex items-center justify-between border-b border-champagne/40 pb-3">
+                <div class="flex items-center space-x-2">
+                    <span class="text-base">✨</span>
+                    <h2 class="serif-heading text-xl font-semibold text-espresso">Shared Moments</h2>
+                </div>
+                <span id="galleryCount" class="text-xs text-mocha font-medium bg-champagne/40 px-2.5 py-1 rounded-full">0 uploaded</span>
+            </div>
+
+            <!-- Empty Gallery Placeholder -->
+            <div id="emptyGallery" class="py-8 text-center space-y-2">
+                <div class="text-2xl opacity-60">📷</div>
+                <p class="text-xs text-mocha">No uploaded photos yet.</p>
+                <p class="text-[11px] text-mochaLight">Be the first to share a moment!</p>
+            </div>
+
+            <!-- Photos & Videos Grid -->
+            <div id="galleryGrid" class="grid grid-cols-3 gap-2.5 max-h-80 overflow-y-auto p-1 custom-scrollbar hidden">
+                <!-- Uploaded media cards will be rendered here dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-4 space-y-2">
+        <p class="text-xs text-mocha/80 font-medium">
+            Thank you for capturing our special moments 🤎
+        </p>
+        <p class="text-[10px] text-mochaLight">
+            Nicky &amp; Melbie Engagement
+        </p>
+    </footer>
+
+    <!-- Lightbox Modal for Viewing Full Photo -->
+    <div id="lightbox" class="fixed inset-0 bg-espresso/80 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
+        <button id="closeLightbox" class="absolute top-4 right-4 bg-white/20 text-white rounded-full w-9 h-9 flex items-center justify-center text-lg hover:bg-white/40 transition-colors">✕</button>
+        
+        <!-- Lightbox Content Container -->
+        <div class="flex flex-col items-center max-w-full max-h-[85vh] space-y-3">
+            <div id="lightboxContent" class="max-w-full max-h-[75vh] flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl">
+                <!-- Dynamic image/video preview -->
+            </div>
+            
+            <!-- Download / Save Action Button -->
+            <a id="downloadMediaBtn" download="engagement-moment" target="_blank" class="py-2.5 px-5 bg-mocha text-cream hover:bg-espresso rounded-xl font-medium text-xs shadow-lg transition-all flex items-center space-x-2 border border-champagne/40">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Save / Download</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT & GOOGLE DRIVE APPS SCRIPT UPLOAD SETUP -->
+    <script>
+        // Your active Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMYt3Xfz_wxvCjOAqp3J1RfPnk7K1WNr2ohT-htvkehKYDnRQf8ADTwhb-YhLcrqYn/exec";
+
+        // State Management
+        let selectedFiles = [];
+        let uploadedGalleryItems = [];
+
+        // UI DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const triggerFileSelect = document.getElementById('triggerFileSelect');
+        const dropZone = document.getElementById('dropZone');
+        const addMoreBtn = document.getElementById('addMoreBtn');
+        const cancelSelectionBtn = document.getElementById('cancelSelectionBtn');
+        const startUploadBtn = document.getElementById('startUploadBtn');
+        const uploadMoreBtn = document.getElementById('uploadMoreBtn');
+
+        const uploadInitialState = document.getElementById('uploadInitialState');
+        const previewState = document.getElementById('previewState');
+        const uploadingState = document.getElementById('uploadingState');
+        const successState = document.getElementById('successState');
+
+        const previewContainer = document.getElementById('previewContainer');
+        const fileCountText = document.getElementById('fileCountText');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercentage = document.getElementById('progressPercentage');
+
+        const galleryGrid = document.getElementById('galleryGrid');
+        const emptyGallery = document.getElementById('emptyGallery');
+        const galleryCount = document.getElementById('galleryCount');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightboxContent');
+        const closeLightbox = document.getElementById('closeLightbox');
+        const downloadMediaBtn = document.getElementById('downloadMediaBtn');
+
+        // Lightbox Listeners
+        closeLightbox.addEventListener('click', () => lightbox.classList.add('hidden'));
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) lightbox.classList.add('hidden');
+        });
+
+        // Event Listeners for File Selection
+        triggerFileSelect.addEventListener('click', () => fileInput.click());
+        addMoreBtn.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            handleFilesAdded(Array.from(e.target.files));
+        });
+
+        // Drag and Drop
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-active');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = Array.from(dt.files);
+            handleFilesAdded(files);
+        });
+
+        function handleFilesAdded(newFiles) {
+            if (!newFiles.length) return;
+            selectedFiles = [...selectedFiles, ...newFiles];
+            updatePreviewUI();
+        }
+
+        // Convert File to Base64 String for Google Apps Script
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = (error) => reject(error);
+            });
+        }
+
+        // Image Compression Helper Function
+        async function compressImage(file) {
+            if (!file.type.startsWith('image/')) return file; // Skip compression for videos
+            
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const maxWidth = 1920;
+                        const maxHeight = 1920;
+
+                        if (width > maxWidth || height > maxHeight) {
+                            if (width > height) {
+                                height = Math.round((height * maxWidth) / width);
+                                width = maxWidth;
+                            } else {
+                                width = Math.round((width * maxHeight) / height);
+                                height = maxHeight;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                resolve(file);
+                                return;
+                            }
+                            const compressedFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now(),
+                            });
+                            resolve(compressedFile);
+                        }, 'image/jpeg', 0.82);
+                    };
+                    img.onerror = () => resolve(file);
+                };
+                reader.onerror = () => resolve(file);
+            });
+        }
+
+        // Render File Previews
+        function updatePreviewUI() {
+            if (selectedFiles.length === 0) {
+                showState('initial');
+                fileInput.value = '';
+                return;
+            }
+
+            showState('preview');
+            fileCountText.textContent = `${selectedFiles.length} ${selectedFiles.length === 1 ? 'file' : 'files'} selected`;
+            previewContainer.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const isVideo = file.type.startsWith('video/');
+                const card = document.createElement('div');
+                card.className = 'relative group aspect-square rounded-xl overflow-hidden bg-champagne/30 border border-champagne/60';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'absolute top-1 right-1 bg-espresso/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs z-10 hover:bg-espresso transition-colors';
+                removeBtn.innerHTML = '✕';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeFile(index);
+                };
+
+                if (isVideo) {
+                    card.innerHTML = `
+                        <div class="w-full h-full flex flex-col items-center justify-center bg-espresso/10 p-2 text-center">
+                            <span class="text-xl">🎥</span>
+                            <span class="text-[9px] text-espresso truncate w-full mt-1">${file.name}</span>
+                        </div>
+                    `;
+                } else {
+                    const img = document.createElement('img');
+                    img.className = 'w-full h-full object-cover';
+                    img.src = URL.createObjectURL(file);
+                    card.appendChild(img);
+                }
+
+                card.appendChild(removeBtn);
+                previewContainer.appendChild(card);
+            });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updatePreviewUI();
+        }
+
+        cancelSelectionBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            updatePreviewUI();
+        });
+
+        uploadMoreBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            fileInput.value = '';
+            showState('initial');
+        });
+
+        function addToGallery(file, url) {
+            uploadedGalleryItems.push({ file, url, isVideo: file.type.startsWith('video/') });
+            renderGallery();
+        }
+
+        function renderGallery() {
+            if (uploadedGalleryItems.length === 0) {
+                emptyGallery.classList.remove('hidden');
+                galleryGrid.classList.add('hidden');
+                galleryCount.textContent = '0 uploaded';
+                return;
+            }
+
+            emptyGallery.classList.add('hidden');
+            galleryGrid.classList.remove('hidden');
+            galleryCount.textContent = `${uploadedGalleryItems.length} uploaded`;
+            galleryGrid.innerHTML = '';
+
+            uploadedGalleryItems.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'aspect-square rounded-xl overflow-hidden bg-champagne/30 border border-champagne/60 cursor-pointer hover:opacity-90 transition-opacity relative group';
+                
+                if (item.isVideo) {
+                    card.innerHTML = `
+                        <div class="w-full h-full flex flex-col items-center justify-center bg-espresso/10 p-2 text-center">
+                            <span class="text-xl">🎬</span>
+                            <span class="text-[9px] text-espresso truncate w-full mt-1">Video</span>
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML = `<img src="${item.url}" class="w-full h-full object-cover" alt="Uploaded Moment" />`;
+                }
+
+                card.addEventListener('click', () => {
+                    lightboxContent.innerHTML = item.isVideo 
+                        ? `<video src="${item.url}" controls class="max-h-[75vh] rounded-lg"></video>`
+                        : `<img src="${item.url}" class="max-h-[75vh] object-contain rounded-lg" />`;
+                    
+                    downloadMediaBtn.href = item.url;
+                    downloadMediaBtn.download = item.file ? item.file.name : (item.isVideo ? 'engagement-video.mp4' : 'engagement-photo.jpg');
+
+                    lightbox.classList.remove('hidden');
+                });
+
+                galleryGrid.appendChild(card);
+            });
+        }
+
+        // Automatically load existing photos from Google Drive when the page opens
+async function loadSharedGallery() {
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const result = await response.json();
+        
+        if (result.status === "success" && result.files.length > 0) {
+            uploadedGalleryItems = result.files.map(file => ({
+                file: null,
+                url: file.url,
+                isVideo: file.mimeType.startsWith('video/')
+            }));
+            renderGallery();
+        }
+    } catch (error) {
+        console.error("Could not load shared gallery:", error);
+    }
+}
+
+// Run on page load
+window.addEventListener('DOMContentLoaded', loadSharedGallery);
+
+        // Upload execution using Google Apps Script Web App
+        startUploadBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) return;
+
+            showState('uploading');
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const originalFile = selectedFiles[i];
+                const processedFile = await compressImage(originalFile);
+
+                const timeStamp = Date.now();
+                const randomStr = Math.random().toString(36).substring(2, 8);
+                const uniqueFileName = `${timeStamp}_${randomStr}_${processedFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+
+                try {
+                    const base64Data = await fileToBase64(processedFile);
+                    
+                    const payload = {
+                        filename: uniqueFileName,
+                        mimeType: processedFile.type,
+                        fileData: base64Data
+                    };
+
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const localPreviewUrl = URL.createObjectURL(processedFile);
+                    addToGallery(processedFile, localPreviewUrl);
+
+                } catch (error) {
+                    console.error("Upload error:", error);
+                }
+
+                const overall = Math.round(((i + 1) / selectedFiles.length) * 100);
+                updateProgressBar(overall);
+            }
+
+            updateProgressBar(100);
+            setTimeout(() => {
+                showState('success');
+            }, 400);
+        });
+
+        function updateProgressBar(percentage) {
+            progressBar.style.width = `${percentage}%`;
+            progressPercentage.textContent = `${percentage}%`;
+        }
+
+        function showState(state) {
+            uploadInitialState.classList.add('hidden');
+            previewState.classList.add('hidden');
+            uploadingState.classList.add('hidden');
+            successState.classList.add('hidden');
+
+            if (state === 'initial') uploadInitialState.classList.remove('hidden');
+            if (state === 'preview') previewState.classList.remove('hidden');
+            if (state === 'uploading') uploadingState.classList.remove('hidden');
+            if (state === 'success') successState.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
